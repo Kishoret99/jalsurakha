@@ -1,0 +1,62 @@
+/* =========================================================
+   Variant B — Split-URL test override
+   Loads AFTER critical.css / main.css / components.css so
+   these custom-property overrides cascade without touching
+   the control (index.html) stylesheet.
+   Theme: teal + emerald "purity" palette, warm neutrals,
+   radial hero pattern in place of the diagonal blue gradient.
+   ========================================================= */
+
+:root {
+  /* Palette — shift from cool corporate blue to teal/emerald */
+  --primary-blue: #0f766e;       /* deep teal (brand anchor) */
+  --light-blue: #14b8a6;         /* bright teal (links, accents) */
+  --success-green: #f59e0b;      /* amber — now the accent pop */
+  --warning-orange: #ef4444;     /* reserved warning red */
+  --bg-light: #ccfbf1;           /* pale teal surface */
+  --text-gray: #475569;
+  --text-dark: #0f172a;
+
+  /* Gradients rebuilt off the new palette */
+  --gradient-primary: linear-gradient(135deg, #0f766e, #14b8a6);
+  --gradient-success: linear-gradient(135deg, #f59e0b, #d97706);
+  --gradient-hero: linear-gradient(160deg, rgba(6, 78, 72, 0.92), rgba(20, 184, 166, 0.78));
+}
+
+/* Hero — radial glow pattern over the new gradient */
+.hero {
+  background:
+    radial-gradient(circle at 15% 20%, rgba(245, 158, 11, 0.22), transparent 45%),
+    radial-gradient(circle at 85% 75%, rgba(255, 255, 255, 0.18), transparent 50%),
+    var(--gradient-hero);
+}
+
+/* Accent word in the hero title — use amber so it reads against teal */
+.title-accent {
+  color: #fbbf24;
+}
+
+/* Header — warmer translucent surface to match new palette */
+.header {
+  background: rgba(240, 253, 250, 0.92);
+  border-bottom: 1px solid rgba(15, 118, 110, 0.12);
+}
+
+.header.scrolled {
+  background: rgba(240, 253, 250, 0.98);
+}
+
+/* Body surface — barely-tinted warm off-white */
+body {
+  background-color: #fafaf9;
+}
+
+/* Secondary button reads correctly against new primary */
+.btn-secondary {
+  color: var(--primary-blue);
+  border-color: var(--primary-blue);
+}
+.btn-secondary:hover {
+  background: var(--primary-blue);
+  color: var(--white);
+}
