@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart — JalSuraksha Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f8f9fa; color: #1a1a2e; }
+        .container { max-width: 800px; margin: 0 auto; padding: 0 24px; }
+        header { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 16px 0; }
+        .header-inner { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        .logo { font-size: 24px; font-weight: 700; color: #0066cc; }
+        .steps { display: flex; justify-content: center; gap: 0; padding: 24px 0; }
+        .step { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #9ca3af; }
+        .step.active { color: #0066cc; font-weight: 600; }
+        .step .num { width: 24px; height: 24px; border-radius: 50%; background: #e5e7eb; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+        .step.active .num { background: #0066cc; color: #fff; }
+        .step-line { width: 40px; height: 2px; background: #e5e7eb; margin: 0 8px; }
+        .page-title { padding: 8px 0 24px; text-align: center; }
+        .page-title h1 { font-size: 22px; font-weight: 700; }
+        .page-title p { font-size: 14px; color: #6b7280; margin-top: 4px; }
+        .cart-item { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; display: flex; gap: 14px; margin-bottom: 12px; }
+        .cart-item .image { width: 80px; height: 80px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 600; font-size: 10px; flex-shrink: 0; }
+        .cart-item .info { flex: 1; }
+        .cart-item .info h3 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+        .cart-item .info .meta { font-size: 12px; color: #6b7280; }
+        .cart-item .right { text-align: right; }
+        .cart-item .right .price { font-size: 16px; font-weight: 700; color: #0066cc; }
+        .cart-item .right .qty { font-size: 12px; color: #6b7280; margin-top: 4px; }
+        .urgency-banner { background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px; padding: 12px 16px; text-align: center; font-size: 13px; color: #92400e; font-weight: 500; margin: 16px 0; }
+        .totals { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; margin-top: 16px; }
+        .totals .row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; }
+        .totals .row.total { border-top: 1px solid #e5e7eb; margin-top: 8px; padding-top: 12px; font-weight: 700; font-size: 18px; }
+        .totals .savings { color: #166534; }
+        .checkout-btn { display: block; width: 100%; padding: 16px; background: linear-gradient(135deg, #0066cc, #0052a3); color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 20px; text-align: center; text-decoration: none; }
+        .trust-row { display: flex; justify-content: center; gap: 24px; margin-top: 16px; font-size: 12px; color: #6b7280; }
+        .continue-shopping { display: block; text-align: center; margin-top: 16px; color: #0066cc; font-size: 14px; text-decoration: none; }
+        .variant-label { position: fixed; bottom: 20px; right: 20px; background: #10b981; color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 12px; z-index: 9999; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <div class="logo">JalSuraksha Store</div>
+        </div>
+    </header>
+    <div class="container">
+        <div class="steps">
+            <div class="step active"><span class="num">1</span>Cart</div>
+            <div class="step-line"></div>
+            <div class="step"><span class="num">2</span>Shipping</div>
+            <div class="step-line"></div>
+            <div class="step"><span class="num">3</span>Payment</div>
+        </div>
+        <div class="page-title">
+            <h1>Review Your Order</h1>
+            <p>2 items in your cart</p>
+        </div>
+        <div class="cart-item">
+            <div class="image" style="background: linear-gradient(135deg, #667eea, #764ba2);">AquaGuard</div>
+            <div class="info">
+                <h3>AquaGuard Pro UV Water Purifier</h3>
+                <p class="meta">8-Stage RO+UV+UF · Free Installation</p>
+            </div>
+            <div class="right">
+                <div class="price">₹12,999</div>
+                <div class="qty">Qty: 1</div>
+            </div>
+        </div>
+        <div class="cart-item">
+            <div class="image" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">TankFresh</div>
+            <div class="info">
+                <h3>TankFresh Pro — Complete Kit</h3>
+                <p class="meta">Solution + Brush + Pump + Strips</p>
+            </div>
+            <div class="right">
+                <div class="price">₹2,499</div>
+                <div class="qty">Qty: 1</div>
+            </div>
+        </div>
+        <div class="urgency-banner">⏰ Special pricing ends in <strong>2h 34m</strong> — Complete your order now!</div>
+        <div class="totals">
+            <div class="row"><span>Subtotal (2 items)</span><span>₹15,498</span></div>
+            <div class="row"><span>Bundle Discount</span><span class="savings">−₹1,500</span></div>
+            <div class="row"><span>Shipping</span><span class="savings">FREE</span></div>
+            <div class="row total"><span>Total</span><span>₹13,998</span></div>
+        </div>
+        <button class="checkout-btn" onclick="beginCheckout()">Proceed to Checkout — ₹13,998</button>
+        <div class="trust-row">
+            <span>🔒 Secure checkout</span>
+            <span>🚚 Free delivery</span>
+            <span>🔄 Easy returns</span>
+        </div>
+        <a href="/category/purifiers/" class="continue-shopping">← Continue Shopping</a>
+    </div>
+    <div class="variant-label">Variant — V2: Streamlined Cart + Urgency</div>
+    <script>
+        function beginCheckout() {
+            if (window.crowai) crowai("event", "ce", { en: "begin_checkout", eid: "chk-001" });
+            window.location.href = "/checkout/";
+        }
+    </script>
+</body>
+</html>

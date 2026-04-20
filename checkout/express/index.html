@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Express Checkout — JalSuraksha Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f8f9fa; color: #1a1a2e; }
+        .container { max-width: 560px; margin: 0 auto; padding: 0 24px; }
+        header { background: #0066cc; padding: 16px 0; }
+        .header-inner { max-width: 560px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 20px; font-weight: 700; color: #fff; }
+        .secure { font-size: 12px; color: rgba(255,255,255,0.8); }
+        .progress { display: flex; justify-content: center; gap: 4px; padding: 20px 0; }
+        .progress .dot { width: 8px; height: 8px; border-radius: 50%; background: #d1d5db; }
+        .progress .dot.active { background: #0066cc; width: 24px; border-radius: 4px; }
+        .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+        .card h2 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+        .card .subtitle { font-size: 13px; color: #6b7280; margin-bottom: 20px; }
+        .order-mini { display: flex; gap: 10px; padding: 12px; background: #f9fafb; border-radius: 8px; margin-bottom: 12px; }
+        .order-mini .thumb { width: 44px; height: 44px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 9px; font-weight: 600; }
+        .order-mini .text { flex: 1; font-size: 13px; }
+        .order-mini .text .name { font-weight: 500; }
+        .order-mini .price { font-weight: 600; font-size: 14px; }
+        .total-banner { background: linear-gradient(135deg, #0066cc, #0052a3); color: #fff; border-radius: 8px; padding: 16px; text-align: center; margin: 16px 0; }
+        .total-banner .amount { font-size: 28px; font-weight: 700; }
+        .total-banner .label { font-size: 12px; opacity: 0.8; }
+        .pay-buttons { display: flex; flex-direction: column; gap: 10px; }
+        .pay-btn { padding: 14px; border-radius: 8px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; text-align: center; }
+        .pay-btn.gpay { background: #1a1a2e; color: #fff; }
+        .pay-btn.upi { background: #fff; color: #1a1a2e; border: 2px solid #1a1a2e; }
+        .pay-btn.card { background: #f3f4f6; color: #374151; }
+        .or-divider { text-align: center; padding: 12px 0; font-size: 12px; color: #9ca3af; }
+        .saved-address { background: #f0f7ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px; font-size: 13px; margin-top: 12px; }
+        .saved-address .label { font-weight: 600; font-size: 11px; color: #0066cc; text-transform: uppercase; margin-bottom: 4px; }
+        .variant-label { position: fixed; bottom: 20px; right: 20px; background: #10b981; color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 12px; z-index: 9999; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <div class="logo">JalSuraksha</div>
+            <span class="secure">🔒 256-bit SSL</span>
+        </div>
+    </header>
+    <div class="container">
+        <div class="progress">
+            <div class="dot active"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+        <div class="card">
+            <h2>Express Checkout</h2>
+            <p class="subtitle">One-tap payment — no forms needed</p>
+            <div class="order-mini">
+                <div class="thumb" style="background: linear-gradient(135deg, #667eea, #764ba2);">AG</div>
+                <div class="text"><div class="name">AquaGuard Pro UV</div>×1</div>
+                <div class="price">₹12,999</div>
+            </div>
+            <div class="order-mini">
+                <div class="thumb" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">TF</div>
+                <div class="text"><div class="name">TankFresh Pro Kit</div>×1</div>
+                <div class="price">₹2,499</div>
+            </div>
+            <div class="total-banner">
+                <div class="label">Total Amount</div>
+                <div class="amount">₹13,998</div>
+            </div>
+            <div class="pay-buttons">
+                <button class="pay-btn gpay" onclick="placeOrder()">Pay with Google Pay</button>
+                <button class="pay-btn upi" onclick="placeOrder()">Pay with UPI</button>
+                <div class="or-divider">— or pay with card —</div>
+                <button class="pay-btn card" onclick="placeOrder()">💳 Credit / Debit Card</button>
+            </div>
+            <div class="saved-address">
+                <div class="label">Delivering to</div>
+                Rahul Sharma · 42, Marine Drive, Colaba, Mumbai 400001
+            </div>
+        </div>
+    </div>
+    <div class="variant-label">Variant — Express Checkout (1-tap)</div>
+    <script>
+        function placeOrder() {
+            if (window.crowai) crowai("event", "ce", { en: "purchase", eid: "pur-001" });
+            alert("Payment successful! Order confirmed.");
+        }
+    </script>
+</body>
+</html>

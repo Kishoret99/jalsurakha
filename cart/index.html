@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart — JalSuraksha Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://127.0.0.1:8787" />
+    <script>
+      (function(w,d){var C="crowai";if(w[C+"_loaded"])return;w[C+"_loaded"]=1;w[C]=w[C]||function(){(w[C].q=w[C].q||[]).push(arguments)};var s=d.createElement("script");s.async=1;s.src="https://127.0.0.1:8787/js/event?V=1.2";d.head.appendChild(s);var v=d.createElement("script");v.async=1;v.src="https://127.0.0.1:8787/js/test/variation?crowai=89U88kLHvazB2WkCnXY8_1__1_"+encodeURIComponent(location.href)+"&V=1.2&sc="+encodeURIComponent(d.cookie);d.head.appendChild(v)})(window,document);
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f8f9fa; color: #1a1a2e; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+        header { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 16px 0; }
+        .header-inner { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        .logo { font-size: 24px; font-weight: 700; color: #0066cc; }
+        nav a { margin-left: 24px; text-decoration: none; color: #4a5568; font-weight: 500; }
+        .page-title { padding: 32px 0 24px; }
+        .page-title h1 { font-size: 24px; font-weight: 700; }
+        .cart-layout { display: grid; grid-template-columns: 1fr 360px; gap: 32px; padding-bottom: 48px; }
+        .cart-items { display: flex; flex-direction: column; gap: 16px; }
+        .cart-item { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; display: flex; gap: 16px; }
+        .cart-item .image { width: 100px; height: 100px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 600; font-size: 11px; flex-shrink: 0; }
+        .cart-item .info { flex: 1; }
+        .cart-item .info h3 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+        .cart-item .info .meta { font-size: 13px; color: #6b7280; margin-bottom: 12px; }
+        .cart-item .info .bottom { display: flex; justify-content: space-between; align-items: center; }
+        .cart-item .info .price { font-size: 18px; font-weight: 700; color: #0066cc; }
+        .qty-ctrl { display: flex; align-items: center; gap: 8px; }
+        .qty-ctrl button { width: 28px; height: 28px; border: 1px solid #d1d5db; border-radius: 4px; background: #fff; cursor: pointer; font-size: 14px; }
+        .qty-ctrl span { font-size: 14px; font-weight: 600; }
+        .remove-btn { color: #ef4444; font-size: 12px; cursor: pointer; border: none; background: none; margin-top: 8px; }
+        .order-summary { position: sticky; top: 24px; }
+        .summary-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; }
+        .summary-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+        .summary-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; }
+        .summary-row.total { border-top: 1px solid #e5e7eb; margin-top: 8px; padding-top: 16px; font-weight: 700; font-size: 16px; }
+        .summary-row .savings { color: #166534; }
+        .checkout-btn { display: block; width: 100%; padding: 14px; background: #0066cc; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 20px; text-align: center; text-decoration: none; }
+        .promo { display: flex; gap: 8px; margin-top: 16px; }
+        .promo input { flex: 1; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; }
+        .promo button { padding: 10px 16px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .variant-label { position: fixed; bottom: 20px; right: 20px; background: #1a1a2e; color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 12px; z-index: 9999; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <div class="logo">JalSuraksha Store</div>
+            <nav>
+                <a href="/category/purifiers/">Purifiers</a>
+                <a href="/category/cleaning-kits/">Cleaning Kits</a>
+                <a href="/cart/">Cart (2)</a>
+            </nav>
+        </div>
+    </header>
+    <div class="container">
+        <div class="page-title"><h1>Your Cart (2 items)</h1></div>
+        <div class="cart-layout">
+            <div class="cart-items">
+                <div class="cart-item">
+                    <div class="image" style="background: linear-gradient(135deg, #667eea, #764ba2);">AquaGuard Pro</div>
+                    <div class="info">
+                        <h3>AquaGuard Pro UV Water Purifier</h3>
+                        <p class="meta">8-Stage RO+UV+UF · 10L capacity</p>
+                        <div class="bottom">
+                            <span class="price">₹12,999</span>
+                            <div class="qty-ctrl"><button>−</button><span>1</span><button>+</button></div>
+                        </div>
+                        <button class="remove-btn">Remove</button>
+                    </div>
+                </div>
+                <div class="cart-item">
+                    <div class="image" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">TankFresh Pro</div>
+                    <div class="info">
+                        <h3>TankFresh Pro — Complete Kit</h3>
+                        <p class="meta">Cleaning solution + brush + pump + strips</p>
+                        <div class="bottom">
+                            <span class="price">₹2,499</span>
+                            <div class="qty-ctrl"><button>−</button><span>1</span><button>+</button></div>
+                        </div>
+                        <button class="remove-btn">Remove</button>
+                    </div>
+                </div>
+            </div>
+            <div class="order-summary">
+                <div class="summary-card">
+                    <h3>Order Summary</h3>
+                    <div class="summary-row"><span>Subtotal</span><span>₹15,498</span></div>
+                    <div class="summary-row"><span>Discount</span><span class="savings">−₹7,000</span></div>
+                    <div class="summary-row"><span>Shipping</span><span class="savings">FREE</span></div>
+                    <div class="summary-row total"><span>Total</span><span>₹15,498</span></div>
+                    <a href="/checkout/" class="checkout-btn" onclick="beginCheckout()">Proceed to Checkout</a>
+                    <div class="promo">
+                        <input type="text" placeholder="Promo code">
+                        <button>Apply</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="variant-label">Control — Standard Cart</div>
+    <script>
+        function beginCheckout() {
+            if (window.crowai) crowai("event", "ce", { en: "begin_checkout", eid: "chk-001" });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AquaGuard Pro UV Water Purifier — JalSuraksha Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f8f9fa; color: #1a1a2e; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        header { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 16px 0; }
+        .header-inner { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 24px; font-weight: 700; color: #0066cc; }
+        nav a { margin-left: 24px; text-decoration: none; color: #4a5568; font-weight: 500; }
+        .breadcrumb { padding: 16px 0; font-size: 14px; color: #6b7280; }
+        .breadcrumb a { color: #0066cc; text-decoration: none; }
+        .product-page { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 0; padding: 32px 0; }
+        .product-gallery { background: #fff; border-radius: 12px 0 0 12px; padding: 24px; border: 1px solid #e5e7eb; }
+        .main-image { width: 100%; height: 380px; background: linear-gradient(135deg, #1e3a5f 0%, #0066cc 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; font-weight: 600; margin-bottom: 12px; }
+        .thumb-row { display: flex; gap: 8px; }
+        .thumb { width: 80px; height: 80px; background: #e5e7eb; border-radius: 6px; border: 2px solid transparent; cursor: pointer; }
+        .thumb.active { border-color: #0066cc; }
+        .product-sidebar { background: #fff; border-radius: 0 12px 12px 0; padding: 32px; border: 1px solid #e5e7eb; border-left: none; }
+        .product-sidebar h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; line-height: 1.3; }
+        .rating-row { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
+        .stars { color: #f59e0b; font-size: 16px; }
+        .review-link { color: #0066cc; font-size: 13px; text-decoration: underline; cursor: pointer; }
+        .price-box { background: #f0f7ff; border-radius: 8px; padding: 16px; margin-bottom: 20px; }
+        .price-row { display: flex; align-items: baseline; gap: 12px; }
+        .price { font-size: 32px; font-weight: 700; color: #0066cc; }
+        .original-price { font-size: 16px; color: #9ca3af; text-decoration: line-through; }
+        .savings { color: #166534; font-size: 13px; font-weight: 600; margin-top: 4px; }
+        .emi-note { font-size: 12px; color: #6b7280; margin-top: 8px; }
+        .offers { margin-bottom: 20px; }
+        .offers h3 { font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #374151; }
+        .offer-tag { display: inline-block; background: #fef3c7; color: #92400e; font-size: 12px; padding: 4px 10px; border-radius: 4px; margin-right: 6px; margin-bottom: 6px; font-weight: 500; }
+        .qty-selector { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+        .qty-selector label { font-size: 14px; font-weight: 500; }
+        .qty-selector select { padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; }
+        .btn-primary { background: linear-gradient(135deg, #0066cc, #0052a3); color: #fff; border: none; padding: 14px 24px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 10px; transition: transform 0.1s; }
+        .btn-primary:hover { transform: translateY(-1px); }
+        .btn-outline { background: #fff; color: #0066cc; border: 2px solid #0066cc; padding: 12px 24px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; }
+        .delivery-info { margin-top: 20px; padding-top: 16px; border-top: 1px solid #e5e7eb; }
+        .delivery-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 13px; color: #4b5563; }
+        .delivery-row .icon { font-size: 16px; }
+        .sticky-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #e5e7eb; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
+        .sticky-price { font-size: 20px; font-weight: 700; color: #0066cc; }
+        .sticky-btn { background: #0066cc; color: #fff; border: none; padding: 12px 32px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+        .variant-label { position: fixed; bottom: 60px; right: 20px; background: #10b981; color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 12px; z-index: 9999; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-inner">
+            <div class="logo">JalSuraksha Store</div>
+            <nav>
+                <a href="/category/purifiers/">Purifiers</a>
+                <a href="/category/cleaning-kits/">Cleaning Kits</a>
+                <a href="/cart/">Cart (2)</a>
+            </nav>
+        </div>
+    </header>
+    <div class="container">
+        <div class="breadcrumb"><a href="/">Home</a> / <a href="/category/purifiers/">Purifiers</a> / AquaGuard Pro UV</div>
+        <div class="product-page">
+            <div class="product-gallery">
+                <div class="main-image">AquaGuard Pro UV — V2 Layout</div>
+                <div class="thumb-row">
+                    <div class="thumb active"></div>
+                    <div class="thumb"></div>
+                    <div class="thumb"></div>
+                    <div class="thumb"></div>
+                </div>
+            </div>
+            <div class="product-sidebar">
+                <h1>AquaGuard Pro UV Water Purifier — 8-Stage RO+UV+UF</h1>
+                <div class="rating-row">
+                    <span class="stars">★★★★★</span>
+                    <span class="review-link">2,347 ratings</span>
+                </div>
+                <div class="price-box">
+                    <div class="price-row">
+                        <span class="price">₹12,999</span>
+                        <span class="original-price">₹18,999</span>
+                    </div>
+                    <div class="savings">You save ₹6,000 (32%)</div>
+                    <div class="emi-note">EMI from ₹1,083/mo · No cost EMI available</div>
+                </div>
+                <div class="offers">
+                    <h3>Available Offers</h3>
+                    <span class="offer-tag">🏦 Bank Offer: 10% off on HDFC cards</span>
+                    <span class="offer-tag">🎁 Exchange: Up to ₹3,000 off</span>
+                    <span class="offer-tag">🚚 Free install worth ₹999</span>
+                </div>
+                <div class="qty-selector">
+                    <label>Qty:</label>
+                    <select><option>1</option><option>2</option><option>3</option></select>
+                </div>
+                <button class="btn-primary" onclick="addToCart()">🛒 Add to Cart</button>
+                <button class="btn-outline" onclick="buyNow()">⚡ Buy Now</button>
+                <div class="delivery-info">
+                    <div class="delivery-row"><span class="icon">🚚</span> Free delivery by Wed, Apr 23</div>
+                    <div class="delivery-row"><span class="icon">🔄</span> 7-day easy returns</div>
+                    <div class="delivery-row"><span class="icon">🛡️</span> 1-year manufacturer warranty</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="sticky-bar">
+        <span class="sticky-price">₹12,999</span>
+        <button class="sticky-btn" onclick="addToCart()">Add to Cart</button>
+    </div>
+    <div class="variant-label">Variant — V2 PDP Layout (sidebar + sticky bar)</div>
+    <script>
+        function addToCart() {
+            if (window.crowai) crowai("event", "ce", { en: "add_to_cart", eid: "atc-001" });
+            alert("Added to cart!");
+        }
+        function buyNow() {
+            if (window.crowai) crowai("event", "ce", { en: "buy_now_click", eid: "bn-001" });
+            window.location.href = "/checkout/";
+        }
+    </script>
+</body>
+</html>

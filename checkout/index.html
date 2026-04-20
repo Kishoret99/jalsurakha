@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout — JalSuraksha Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://127.0.0.1:8787" />
+    <script>
+      (function(w,d){var C="crowai";if(w[C+"_loaded"])return;w[C+"_loaded"]=1;w[C]=w[C]||function(){(w[C].q=w[C].q||[]).push(arguments)};var s=d.createElement("script");s.async=1;s.src="https://127.0.0.1:8787/js/event?V=1.2";d.head.appendChild(s);var v=d.createElement("script");v.async=1;v.src="https://127.0.0.1:8787/js/test/variation?crowai=89U88kLHvazB2WkCnXY8_1__1_"+encodeURIComponent(location.href)+"&V=1.2&sc="+encodeURIComponent(d.cookie);d.head.appendChild(v)})(window,document);
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f8f9fa; color: #1a1a2e; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        header { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 16px 0; }
+        .header-inner { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        .logo { font-size: 24px; font-weight: 700; color: #0066cc; }
+        .secure { font-size: 13px; color: #6b7280; }
+        .page-title { padding: 32px 0 24px; text-align: center; }
+        .page-title h1 { font-size: 24px; font-weight: 700; }
+        .checkout-grid { display: grid; grid-template-columns: 1fr 380px; gap: 32px; padding-bottom: 48px; }
+        .form-section { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+        .form-section h3 { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+        .form-row.full { grid-template-columns: 1fr; }
+        .form-field label { display: block; font-size: 12px; font-weight: 500; color: #6b7280; margin-bottom: 4px; }
+        .form-field input, .form-field select { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; }
+        .payment-options { display: flex; flex-direction: column; gap: 8px; }
+        .payment-option { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; cursor: pointer; }
+        .payment-option.selected { border-color: #0066cc; background: #f0f7ff; }
+        .payment-option input { margin: 0; }
+        .payment-option label { font-size: 14px; font-weight: 500; cursor: pointer; }
+        .order-panel { position: sticky; top: 24px; }
+        .order-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; }
+        .order-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+        .order-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f3f4f6; }
+        .order-item:last-of-type { border-bottom: none; }
+        .order-item .thumb { width: 48px; height: 48px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 9px; font-weight: 600; }
+        .order-item .text { flex: 1; }
+        .order-item .text .name { font-size: 13px; font-weight: 500; }
+        .order-item .text .qty { font-size: 11px; color: #6b7280; }
+        .order-item .price { font-size: 14px; font-weight: 600; }
+        .order-totals { margin-top: 16px; padding-top: 12px; border-top: 1px solid #e5e7eb; }
+        .order-totals .row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
+        .order-totals .row.total { font-size: 16px; font-weight: 700; padding-top: 8px; margin-top: 4px; border-top: 1px solid #e5e7eb; }
+        .place-order-btn { display: block; width: 100%; padding: 14px; background: #0066cc; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 16px; }
+        .variant-label { position: fixed; bottom: 20px; right: 20px; background: #1a1a2e; color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 12px; z-index: 9999; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <div class="logo">JalSuraksha Store</div>
+            <span class="secure">🔒 Secure Checkout</span>
+        </div>
+    </header>
+    <div class="container">
+        <div class="page-title"><h1>Checkout</h1></div>
+        <div class="checkout-grid">
+            <div>
+                <div class="form-section">
+                    <h3>Shipping Address</h3>
+                    <div class="form-row">
+                        <div class="form-field"><label>First Name</label><input type="text" value="Rahul"></div>
+                        <div class="form-field"><label>Last Name</label><input type="text" value="Sharma"></div>
+                    </div>
+                    <div class="form-row full">
+                        <div class="form-field"><label>Address</label><input type="text" value="42, Marine Drive, Colaba"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-field"><label>City</label><input type="text" value="Mumbai"></div>
+                        <div class="form-field"><label>PIN Code</label><input type="text" value="400001"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-field"><label>State</label><select><option>Maharashtra</option></select></div>
+                        <div class="form-field"><label>Phone</label><input type="text" value="+91 98765 43210"></div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h3>Payment Method</h3>
+                    <div class="payment-options">
+                        <div class="payment-option selected"><input type="radio" name="pay" checked><label>UPI / Google Pay / PhonePe</label></div>
+                        <div class="payment-option"><input type="radio" name="pay"><label>Credit / Debit Card</label></div>
+                        <div class="payment-option"><input type="radio" name="pay"><label>Net Banking</label></div>
+                        <div class="payment-option"><input type="radio" name="pay"><label>Cash on Delivery (+₹49)</label></div>
+                    </div>
+                </div>
+            </div>
+            <div class="order-panel">
+                <div class="order-card">
+                    <h3>Order Summary</h3>
+                    <div class="order-item">
+                        <div class="thumb" style="background: linear-gradient(135deg, #667eea, #764ba2);">AG Pro</div>
+                        <div class="text"><div class="name">AquaGuard Pro UV</div><div class="qty">Qty: 1</div></div>
+                        <div class="price">₹12,999</div>
+                    </div>
+                    <div class="order-item">
+                        <div class="thumb" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">TF Pro</div>
+                        <div class="text"><div class="name">TankFresh Pro Kit</div><div class="qty">Qty: 1</div></div>
+                        <div class="price">₹2,499</div>
+                    </div>
+                    <div class="order-totals">
+                        <div class="row"><span>Subtotal</span><span>₹15,498</span></div>
+                        <div class="row"><span>Shipping</span><span style="color:#166534">FREE</span></div>
+                        <div class="row total"><span>Total</span><span>₹15,498</span></div>
+                    </div>
+                    <button class="place-order-btn" onclick="placeOrder()">Place Order — ₹15,498</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="variant-label">Control — Multi-step Checkout</div>
+    <script>
+        function placeOrder() {
+            if (window.crowai) crowai("event", "ce", { en: "purchase", eid: "pur-001" });
+            alert("Order placed successfully!");
+        }
+    </script>
+</body>
+</html>
