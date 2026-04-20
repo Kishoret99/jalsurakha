@@ -8,7 +8,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="preconnect" href="https://127.0.0.1:8787" />
     <script>
-      (function(w,d){var C="crowai";if(w[C+"_loaded"])return;w[C+"_loaded"]=1;w[C]=w[C]||function(){(w[C].q=w[C].q||[]).push(arguments)};var s=d.createElement("script");s.async=1;s.src="https://127.0.0.1:8787/js/event?V=1.2";d.head.appendChild(s);var v=d.createElement("script");v.async=1;v.src="https://127.0.0.1:8787/js/test/variation?crowai=89U88kLHvazB2WkCnXY8_1__1_"+encodeURIComponent(location.href)+"&V=1.2&sc="+encodeURIComponent(d.cookie);d.head.appendChild(v)})(window,document);
+      (function(window,document){
+        var CROW_AI="crowai";if(window[CROW_AI+"_loaded"])return;window[CROW_AI+"_loaded"]=1;
+        window[CROW_AI]=window[CROW_AI]||function(){(window[CROW_AI].q=window[CROW_AI].q||[]).push(arguments)};
+        var CDN_BASE="https://127.0.0.1:8787",VERSION="1.2",TENANT_ID="89U88kLHvazB2WkCnXY8";
+        var currentUrl=window.location.href;
+        var getCookie=function(n){try{var m=document.cookie.match(new RegExp("(^| )"+n+"=([^;]+)"));return m?m[2]:""}catch(e){return""}};
+        var s=document.createElement("script");s.async=1;s.src=CDN_BASE+"/js/event?V="+VERSION;document.head.appendChild(s);
+        window[CROW_AI+"_r"]=function(d){
+          if(d.rd){try{window.location.replace(d.rd)}catch(e){window.location.href=d.rd}return}
+          if(d.rdjs){try{var t=new Function("url",d.rdjs)(currentUrl);if(t&&t!==currentUrl){window.location.replace(t)}}catch(e){}return}
+        };
+        var v=document.createElement("script");v.async=1;
+        v.src=CDN_BASE+"/js/test/variation?"+CROW_AI+"="+TENANT_ID+"_1_"+getCookie(CROW_AI+"uid")+"_1_"+encodeURIComponent(currentUrl)+"&V="+VERSION+"&sc="+encodeURIComponent(document.cookie);
+        document.head.appendChild(v);
+      })(window,document);
     </script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
