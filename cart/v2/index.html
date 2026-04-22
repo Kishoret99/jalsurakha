@@ -6,13 +6,15 @@
     <title>Your Cart — JalSuraksha Store</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/crowai-head.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #f8f9fa; color: #1a1a2e; }
         .container { max-width: 800px; margin: 0 auto; padding: 0 24px; }
         header { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 16px 0; }
         .header-inner { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-        .logo { font-size: 24px; font-weight: 700; color: #0066cc; }
+        .logo { font-size: 24px; font-weight: 700; color: #0066cc; text-decoration: none; }
+        nav a { margin-left: 24px; text-decoration: none; color: #4a5568; font-weight: 500; }
         .steps { display: flex; justify-content: center; gap: 0; padding: 24px 0; }
         .step { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #9ca3af; }
         .step.active { color: #0066cc; font-weight: 600; }
@@ -44,7 +46,12 @@
 <body>
     <header>
         <div class="header-inner">
-            <div class="logo">JalSuraksha Store</div>
+            <a href="/" class="logo">JalSuraksha Store</a>
+            <nav>
+                <a href="/">Home</a>
+                <a href="/category/purifiers/">Purifiers</a>
+                <a href="/category/cleaning-kits/">Cleaning Kits</a>
+            </nav>
         </div>
     </header>
     <div class="container">

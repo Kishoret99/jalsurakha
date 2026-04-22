@@ -26,24 +26,7 @@
         .stat .label { font-size: 13px; color: #6b7280; }
         .variant-label { position: fixed; bottom: 20px; right: 20px; background: #4285f4; color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 12px; z-index: 9999; }
     </style>
-        <link rel="preconnect" href="https://127.0.0.1:8787" />
-        <script>
-          (function(window,document){
-            var CROW_AI="crowai";if(window[CROW_AI+"_loaded"])return;window[CROW_AI+"_loaded"]=1;
-            window[CROW_AI]=window[CROW_AI]||function(){(window[CROW_AI].q=window[CROW_AI].q||[]).push(arguments)};
-            var CDN_BASE="https://127.0.0.1:8787",VERSION="1.2",TENANT_ID="89U88kLHvazB2WkCnXY8";
-            var currentUrl=window.location.href;
-            var getCookie=function(n){try{var m=document.cookie.match(new RegExp("(^| )"+n+"=([^;]+)"));return m?m[2]:""}catch(e){return""}};
-            var s=document.createElement("script");s.async=1;s.src=CDN_BASE+"/js/event?V="+VERSION;document.head.appendChild(s);
-            window[CROW_AI+"_r"]=function(d){
-              if(d.rd){try{window.location.replace(d.rd)}catch(e){window.location.href=d.rd}return}
-              if(d.rdjs){try{var t=new Function("url",d.rdjs)(currentUrl);if(t&&t!==currentUrl){window.location.replace(t)}}catch(e){}return}
-            };
-            var v=document.createElement("script");v.async=1;
-            v.src=CDN_BASE+"/js/test/variation?"+CROW_AI+"="+TENANT_ID+"_1_"+getCookie(CROW_AI+"uid")+"_1_"+encodeURIComponent(currentUrl)+"&V="+VERSION+"&sc="+encodeURIComponent(document.cookie);
-            document.head.appendChild(v);
-          })(window,document);
-        </script>
+    <script src="/crowai-head.js"></script>
 </head>
 <body>
     <div class="hero">

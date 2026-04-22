@@ -6,31 +6,14 @@
     <title>Cleaning Kits — JalSuraksha Store</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="preconnect" href="https://127.0.0.1:8787" />
-    <script>
-      (function(window,document){
-        var CROW_AI="crowai";if(window[CROW_AI+"_loaded"])return;window[CROW_AI+"_loaded"]=1;
-        window[CROW_AI]=window[CROW_AI]||function(){(window[CROW_AI].q=window[CROW_AI].q||[]).push(arguments)};
-        var CDN_BASE="https://127.0.0.1:8787",VERSION="1.2",TENANT_ID="89U88kLHvazB2WkCnXY8";
-        var currentUrl=window.location.href;
-        var getCookie=function(n){try{var m=document.cookie.match(new RegExp("(^| )"+n+"=([^;]+)"));return m?m[2]:""}catch(e){return""}};
-        var s=document.createElement("script");s.async=1;s.src=CDN_BASE+"/js/event?V="+VERSION;document.head.appendChild(s);
-        window[CROW_AI+"_r"]=function(d){
-          if(d.rd){try{window.location.replace(d.rd)}catch(e){window.location.href=d.rd}return}
-          if(d.rdjs){try{var t=new Function("url",d.rdjs)(currentUrl);if(t&&t!==currentUrl){window.location.replace(t)}}catch(e){}return}
-        };
-        var v=document.createElement("script");v.async=1;
-        v.src=CDN_BASE+"/js/test/variation?"+CROW_AI+"="+TENANT_ID+"_1_"+getCookie(CROW_AI+"uid")+"_1_"+encodeURIComponent(currentUrl)+"&V="+VERSION+"&sc="+encodeURIComponent(document.cookie);
-        document.head.appendChild(v);
-      })(window,document);
-    </script>
+    <script src="/crowai-head.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #f8f9fa; color: #1a1a2e; }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
         header { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 16px 0; }
         .header-inner { display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 24px; font-weight: 700; color: #0066cc; }
+        .logo { font-size: 24px; font-weight: 700; color: #0066cc; text-decoration: none; }
         nav a { margin-left: 24px; text-decoration: none; color: #4a5568; font-weight: 500; }
         .page-title { padding: 32px 0 16px; }
         .page-title h1 { font-size: 28px; font-weight: 700; }
@@ -57,11 +40,12 @@
 <body>
     <header>
         <div class="container header-inner">
-            <div class="logo">JalSuraksha Store</div>
+            <a href="/" class="logo">JalSuraksha Store</a>
             <nav>
+                <a href="/">Home</a>
                 <a href="/category/purifiers/">Purifiers</a>
                 <a href="/category/cleaning-kits/">Cleaning Kits</a>
-                <a href="/cart/">Cart (2)</a>
+                <a href="/cart/">Cart</a>
             </nav>
         </div>
     </header>

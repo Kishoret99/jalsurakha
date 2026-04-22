@@ -331,6 +331,63 @@ a:hover {
   gap: var(--space-4);
 }
 
+.btn-shop {
+  border: 2px solid var(--primary-blue);
+  font-size: var(--text-sm);
+}
+
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown .dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 12px;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 30px rgba(0,0,0,.12);
+  list-style: none;
+  padding: var(--space-2) 0;
+  min-width: 200px;
+  z-index: 1000;
+}
+
+.nav-dropdown .dropdown-menu::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-top: none;
+  border-bottom-color: var(--white);
+}
+
+.nav-dropdown:hover .dropdown-menu {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.nav-dropdown .dropdown-menu li a {
+  display: block;
+  padding: var(--space-2) var(--space-5);
+  color: var(--text-dark);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.nav-dropdown .dropdown-menu li a:hover {
+  background: var(--bg-light);
+  color: var(--primary-blue);
+}
+
 .nav-toggle {
   display: none;
   flex-direction: column;
@@ -517,6 +574,29 @@ a:hover {
   
   .nav-toggle {
     display: flex;
+  }
+
+  .btn-shop {
+    display: none;
+  }
+
+  .nav-dropdown .dropdown-menu {
+    position: static;
+    transform: none;
+    box-shadow: none;
+    background: var(--bg-light);
+    margin-top: 4px;
+    border-radius: var(--radius-md);
+    display: none;
+  }
+
+  .nav-dropdown .dropdown-menu::before {
+    display: none;
+  }
+
+  .nav-dropdown:hover .dropdown-menu,
+  .nav-dropdown.open .dropdown-menu {
+    display: block;
   }
   
   .nav-toggle.active span:nth-child(1) {
