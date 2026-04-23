@@ -611,7 +611,7 @@
         }
 
         if (d.u && !getCookie(COOKIE_UID)) {
-          log("Setting user ID cookie and new visitor flag");
+        log("Setting user ID cookie and new visitor flag");
           setCookie(COOKIE_UID, d.u, 100);
           setCookie(COOKIE_NV, "1", 0);
         }
@@ -625,9 +625,7 @@
           }
           return;
         }
-          return;
-        }
-
+        
         if (!d.t || Object.keys(d.t).length === 0) {
           log("No assignments returned, caching as no-match", { ignoreQuery: d.iq });
           if (!isPreviewMode) {
