@@ -1,0 +1,229 @@
+.playwright-mcp
+.env
+
+# Logs
+deployment_logs/
+logs
+debug_logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Build outputs
+build/
+dist/
+!scripts/headScript/dist/
+dist-ssr/
+*.tgz
+*.tar.gz
+*.local
+
+# Vite
+.vite/
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Next.js build output
+.next/
+out/
+next-env.d.ts
+
+# Nuxt.js build / generate output
+.nuxt
+
+# Gatsby files
+.cache/
+
+# Vuepress build output
+.vuepress/dist
+
+# Serverless directories
+.serverless/
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# TypeScript
+*.tsbuildinfo
+
+# Python
+**pycache**/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual Environment
+venv/
+env/
+.venv/
+
+# Flask
+instance/
+
+# Database
+*.db
+*.sqlite
+
+# Test & Script directories
+testSetup/scripts
+script
+
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
+
+# Environment Variables
+.env
+.env.*
+*.env
+.env.local
+.env.development
+.env.production
+.env.staging
+.env.test
+!.env.example
+!.env.sample
+
+# GCP & Firebase
+gcp_service_account.json
+service-account.json
+firestore-service-account.json
+client_secret.json
+.firebase
+
+# Firebase Debug Logs
+firebase-debug.log*
+firebase-debug.*.log*
+
+# Firebase Cache
+.firebase/
+
+# Firebase Hosting Cache
+.firebase/hosting.*
+
+
+# Firebase Emulator Data
+*-debug.log
+firebase-export-*
+firestore-export-*
+
+# Firebase CLI Cache
+.firebaserc.local
+
+# Firebase Service Account Keys
+*-firebase-adminsdk-*.json
+firebase-adminsdk*.json
+
+# Google Cloud credentials
+google-application-credentials.json
+client_secret.json
+
+# Firebase Deployment Artifacts
+.firebase-cache/
+firebase-hosting-temp/
+
+# Cloudflare Workers
+.wrangler/
+.dev.vars
+*.wrangler/
+wrangler-*.log
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+local-only/
+
+# OS
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# Claude
+.claude
+.claude/*
+!.claude/.gitkeep
+CLAUDE.md
+.claudeignore
+
+# Cursor
+.cursor
+.cursor/*
+.cursorignore
+
+# Deployment Documentation
+**/DEPLOYMENT.md
+
+# Redis
+dump.rdb
+Convert-Experience-Tools-Chrome-Web-Store
+
+# Local Development (all in dev/ folder)
+dev/secrets/
+!dev/secrets/README.md
+dev/local-gcs/
+dev/data/
+dev/.env
+
+# Go Air hot reload build artifacts
+analysis/server/tmp/
+analysis/analysisEngine/tmp/
+frames
+INSTRUCTIONS.md
+
+
+# Firebase config
+FIRESTORE_SCHEMA.json
+FIRESTORE_SCHEMA.json
+saiyaddoc
+.agents
