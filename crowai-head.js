@@ -1,388 +1,72 @@
 (function (window, document) {
   const CROW_AI = "crowai";
-  if (window[CROW_AI + "_loaded"]) return;
+  const DEBUG_PREFIX = "[CROWAI-HEAD]";
+  const _t0 = performance.now();
+  const _ms = () => (performance.now() - _t0).toFixed(1);
+  const log = (...args) => {
+    try {
+      console.log(DEBUG_PREFIX, "+" + _ms() + "ms", ...args);
+    } catch {}
+  };
+  const logErr = (...args) => {
+    try {
+      console.error(DEBUG_PREFIX, "+" + _ms() + "ms", ...args);
+    } catch {}
+  };
+  const logTime = (label, fn) => {
+    const start = performance.now();
+    const result = fn();
+    log(label, "took", (performance.now() - start).toFixed(1) + "ms");
+    return result;
+  };
+  log("script start", "url:", window.location.href, "readyState:", document.readyState);
+  if (window[CROW_AI + "_loaded"]) {
+    log("guard: already loaded, exiting");
+    return;
+  }
+  log("guard: first load, continuing");
   window[CROW_AI + "_loaded"] = 1;
 
-  window[CROW_AI] =
+  const ca = (window[CROW_AI] =
     window[CROW_AI] ||
     function () {
-      (window[CROW_AI].q = window[CROW_AI].q || []).push(arguments);
-    };
+      (ca.q = ca.q || []).push(arguments);
+    });
 
-  const VERSION = "1.2";
+  const VERSION = "1.3";
   const TENANT_ID = "89U88kLHvazB2WkCnXY8";
   const LOADING_TIMEOUT = 3000;
-  const CACHE_FOR_SESSION = false;
+  const CACHE_FOR_SESSION = true;
+  const CODE_CACHE_TTL = 15000;
+  const MAX_CACHED_URLS = 50;
   const CDN_BASE = "https://127.0.0.1:8787";
-
-  const DEBUG_PREFIX = "[CROWAI-HEADSCRIPT]";
-  const log = (...args) => console.log(DEBUG_PREFIX, ...args);
-  const logError = (...args) => console.error(DEBUG_PREFIX, ...args);
-  const logWarn = (...args) => console.warn(DEBUG_PREFIX, ...args);
-
-  const perf = {
-    scriptStart: performance.now(),
-    antiFlickerApplied: null,
-    initializeStart: null,
-    fetchStart: null,
-    fetchEnd: null,
-    cacheHit: false,
-    cacheType: null,
-    domReadyWait: false,
-    domReadyStart: null,
-    domReadyEnd: null,
-    variantApplied: null,
-    antiFlickerRemoved: null,
-    finishTime: null,
-    timedOut: false,
-    lcp: null,
-    lcpElement: null,
-    fcp: null,
-    fp: null,
-    cls: null,
-    inp: null,
-    requests: [],
-    eventScriptLoad: null,
-    navigationTiming: null,
-  };
-
-  const trackLCP = () => {
-    try {
-      const lcpObserver = new PerformanceObserver((list) => {
-        const entries = list.getEntries();
-        const lastEntry = entries[entries.length - 1];
-        if (lastEntry) {
-          perf.lcp = lastEntry.startTime;
-          perf.lcpElement = lastEntry.element?.tagName || "unknown";
-          log("LCP recorded", {
-            time: lastEntry.startTime.toFixed(2) + "ms",
-            element: perf.lcpElement,
-            size: lastEntry.size,
-            url: lastEntry.url || "N/A",
-          });
-        }
-      });
-      lcpObserver.observe({
-        type: "largest-contentful-paint",
-        buffered: true,
-      });
-    } catch (e) {
-      logWarn("LCP observer not supported", e);
-    }
-  };
-
-  const trackResourceTiming = () => {
-    try {
-      const safeNum = (val) => (isNaN(val) || val < 0 ? 0 : val);
-      const resourceObserver = new PerformanceObserver((list) => {
-        list.getEntries().forEach((entry) => {
-          const isCrowaiRequest = entry.name.includes(CDN_BASE + "/js/");
-          if (isCrowaiRequest) {
-            const isCached = entry.transferSize === 0;
-            const dns = isCached ? 0 : safeNum(entry.domainLookupEnd - entry.domainLookupStart);
-            const tcp = isCached ? 0 : safeNum(entry.connectEnd - entry.connectStart);
-            const ttfb = isCached ? 0 : safeNum(entry.responseStart - entry.requestStart);
-            const download = isCached ? 0 : safeNum(entry.responseEnd - entry.responseStart);
-            perf.requests.push({
-              name: entry.name.split("?")[0].split("/").pop() || entry.name,
-              fullUrl: entry.name,
-              duration: safeNum(entry.duration),
-              transferSize: entry.transferSize || 0,
-              startTime: entry.startTime,
-              dns: dns,
-              tcp: tcp,
-              ttfb: ttfb,
-              download: download,
-              cached: isCached,
-            });
-          }
-        });
-      });
-      resourceObserver.observe({ type: "resource", buffered: true });
-    } catch (e) {
-      logWarn("Resource timing observer not supported", e);
-    }
-  };
-
-  const getNavigationTiming = () => {
-    try {
-      const nav = performance.getEntriesByType("navigation")[0];
-      if (nav) {
-        const safeNum = (val) => (isNaN(val) || val < 0 ? 0 : val);
-        return {
-          dns: safeNum(nav.domainLookupEnd - nav.domainLookupStart),
-          tcp: safeNum(nav.connectEnd - nav.connectStart),
-          ttfb: safeNum(nav.responseStart - nav.requestStart),
-          domContentLoaded: safeNum(nav.domContentLoadedEventEnd),
-          domComplete: safeNum(nav.domComplete),
-          loadEvent: safeNum(nav.loadEventEnd),
-        };
-      }
-    } catch (e) {
-      logWarn("Navigation timing not available", e);
-    }
-    return null;
-  };
-
-  const trackPaintTiming = () => {
-    try {
-      const paintObserver = new PerformanceObserver((list) => {
-        list.getEntries().forEach((entry) => {
-          if (entry.name === "first-paint") {
-            perf.fp = entry.startTime;
-            log("FP recorded", { time: entry.startTime.toFixed(2) + "ms" });
-          } else if (entry.name === "first-contentful-paint") {
-            perf.fcp = entry.startTime;
-            log("FCP recorded", { time: entry.startTime.toFixed(2) + "ms" });
-          }
-        });
-      });
-      paintObserver.observe({ type: "paint", buffered: true });
-    } catch (e) {
-      logWarn("Paint timing observer not supported", e);
-    }
-  };
-
-  const trackCLS = () => {
-    try {
-      let clsValue = 0;
-      const clsObserver = new PerformanceObserver((list) => {
-        list.getEntries().forEach((entry) => {
-          if (!entry.hadRecentInput) {
-            clsValue += entry.value;
-            perf.cls = clsValue;
-          }
-        });
-      });
-      clsObserver.observe({ type: "layout-shift", buffered: true });
-    } catch (e) {
-      logWarn("CLS observer not supported", e);
-    }
-  };
-
-  const trackINP = () => {
-    try {
-      let maxINP = 0;
-      const inpObserver = new PerformanceObserver((list) => {
-        list.getEntries().forEach((entry) => {
-          if (entry.interactionId) {
-            const duration = entry.duration;
-            if (duration > maxINP) {
-              maxINP = duration;
-              perf.inp = duration;
-              log("INP updated", { time: duration.toFixed(2) + "ms" });
-            }
-          }
-        });
-      });
-      inpObserver.observe({
-        type: "event",
-        buffered: true,
-        durationThreshold: 16,
-      });
-    } catch (e) {
-      logWarn("INP observer not supported", e);
-    }
-  };
-
-  trackLCP();
-  trackPaintTiming();
-  trackCLS();
-  trackINP();
-  trackResourceTiming();
-
-  window[CROW_AI + "Perf"] = perf;
-
-  const logPerfSummary = () => {
-    const now = performance.now();
-    perf.finishTime = now;
-    perf.navigationTiming = getNavigationTiming();
-
-    const total = (perf.finishTime - perf.scriptStart).toFixed(2) + "ms";
-    const antiFlickerDuration =
-      perf.antiFlickerRemoved && perf.antiFlickerApplied
-        ? (perf.antiFlickerRemoved - perf.antiFlickerApplied).toFixed(2) + "ms"
-        : "N/A";
-    const fetchDuration =
-      perf.fetchEnd && perf.fetchStart
-        ? (perf.fetchEnd - perf.fetchStart).toFixed(2) + "ms"
-        : "N/A (from cache)";
-    const domWaitDuration =
-      perf.domReadyEnd && perf.domReadyStart
-        ? (perf.domReadyEnd - perf.domReadyStart).toFixed(2) + "ms"
-        : perf.domReadyWait
-          ? "waiting... (TIMEOUT fired first)"
-          : "0ms (already ready)";
-    const initToFinish =
-      perf.finishTime && perf.initializeStart
-        ? (perf.finishTime - perf.initializeStart).toFixed(2)
-        : "N/A";
-
-    const raceWinner = perf.timedOut ? "TIMEOUT" : "VARIANT";
-    const flickerRisk = perf.timedOut ? "YES (variant applied after page shown)" : "NO";
-    const variantAppliedTime = perf.variantApplied
-      ? (perf.variantApplied - perf.scriptStart).toFixed(2) + "ms"
-      : "N/A (pending or no variant)";
-
-    const scriptStartFromNav = perf.scriptStart.toFixed(2) + "ms";
-    const variantFromNav = perf.variantApplied
-      ? perf.variantApplied.toFixed(2) + "ms"
-      : "N/A (pending)";
-    const finishFromNav = perf.finishTime.toFixed(2) + "ms";
-
-    let summary =
-      `\n${DEBUG_PREFIX} ╔═══════════════════════════════════════════════════════════╗\n` +
-      `${DEBUG_PREFIX} ║              CROWAI HEADSCRIPT PERFORMANCE                 ║\n` +
-      `${DEBUG_PREFIX} ╠═══════════════════════════════════════════════════════════╣\n` +
-      `${DEBUG_PREFIX} ║  RACE RESULT                                              ║\n` +
-      `${DEBUG_PREFIX} ║  ─────────────────────────────────────────────────────    ║\n` +
-      `${DEBUG_PREFIX} ║  Winner:              ${(raceWinner + " (" + LOADING_TIMEOUT + "ms timeout vs DOM+variant)").padEnd(35)}║\n` +
-      `${DEBUG_PREFIX} ║  Flicker Risk:        ${flickerRisk.padEnd(35)}║\n` +
-      `${DEBUG_PREFIX} ╠═══════════════════════════════════════════════════════════╣\n` +
-      `${DEBUG_PREFIX} ║  PAGE LOAD vs SCRIPT LOAD                                 ║\n` +
-      `${DEBUG_PREFIX} ║  ─────────────────────────────────────────────────────    ║\n` +
-      `${DEBUG_PREFIX} ║  Page Navigation:     0ms (baseline)                      ║\n` +
-      `${DEBUG_PREFIX} ║  Script Started:      ${(scriptStartFromNav + " (delay before script)").padEnd(35)}║\n` +
-      `${DEBUG_PREFIX} ║  Variant Applied:     ${(variantFromNav + " (from page nav)").padEnd(35)}║\n` +
-      `${DEBUG_PREFIX} ║  Anti-flicker Done:   ${(finishFromNav + " (from page nav)").padEnd(35)}║\n` +
-      `${DEBUG_PREFIX} ╠═══════════════════════════════════════════════════════════╣\n` +
-      `${DEBUG_PREFIX} ║  SCRIPT TIMING (from script start)                        ║\n` +
-      `${DEBUG_PREFIX} ║  ─────────────────────────────────────────────────────    ║\n` +
-      `${DEBUG_PREFIX} ║  Total Time:          ${total.padEnd(35)}║\n` +
-      `${DEBUG_PREFIX} ║  Anti-flicker Hidden: ${antiFlickerDuration.padEnd(35)}║\n` +
-      `${DEBUG_PREFIX} ║  Fetch Duration:      ${fetchDuration.padEnd(35)}║\n` +
-      `${DEBUG_PREFIX} ║  DOM Wait Duration:   ${domWaitDuration.padEnd(35)}║\n` +
-      `${DEBUG_PREFIX} ║  Variant Applied At:  ${variantAppliedTime.padEnd(35)}║\n` +
-      `${DEBUG_PREFIX} ╠═══════════════════════════════════════════════════════════╣\n` +
-      `${DEBUG_PREFIX} ║  STATUS                                                   ║\n` +
-      `${DEBUG_PREFIX} ║  ─────────────────────────────────────────────────────    ║\n` +
-      `${DEBUG_PREFIX} ║  Cache Hit:           ${(perf.cacheHit ? "YES (" + perf.cacheType + ")" : "NO").padEnd(35)}║\n` +
-      `${DEBUG_PREFIX} ║  DOM Ready Wait:      ${(perf.domReadyWait ? "YES" : "NO").padEnd(35)}║\n` +
-      `${DEBUG_PREFIX} ║  Timed Out:           ${(perf.timedOut ? "YES" : "NO").padEnd(35)}║\n` +
-      `${DEBUG_PREFIX} ╚═══════════════════════════════════════════════════════════╝\n`;
-
-    const hasWebVitals =
-      perf.fp !== null ||
-      perf.fcp !== null ||
-      perf.lcp !== null ||
-      perf.cls !== null ||
-      perf.inp !== null;
-    if (hasWebVitals) {
-      summary +=
-        `${DEBUG_PREFIX} ─────────────────────────────────────────\n` +
-        `${DEBUG_PREFIX} WEB VITALS:\n`;
-      if (perf.fp !== null) {
-        summary += `${DEBUG_PREFIX}   FP (First Paint):     ${perf.fp.toFixed(2)}ms\n`;
-      }
-      if (perf.fcp !== null) {
-        summary += `${DEBUG_PREFIX}   FCP (First Content):  ${perf.fcp.toFixed(2)}ms\n`;
-      }
-      if (perf.lcp !== null) {
-        summary +=
-          `${DEBUG_PREFIX}   LCP (Largest Content): ${perf.lcp.toFixed(2)}ms\n` +
-          `${DEBUG_PREFIX}   LCP Element:           ${perf.lcpElement}\n`;
-      }
-      if (perf.inp !== null) {
-        summary += `${DEBUG_PREFIX}   INP (Interaction):    ${perf.inp.toFixed(2)}ms\n`;
-      }
-      if (perf.cls !== null) {
-        summary += `${DEBUG_PREFIX}   CLS (Layout Shift):   ${perf.cls.toFixed(4)}\n`;
-      }
-    }
-
-    if (perf.eventScriptLoad !== null) {
-      summary +=
-        `${DEBUG_PREFIX} ─────────────────────────────────────────\n` +
-        `${DEBUG_PREFIX} Event Script Load:     ${perf.eventScriptLoad.toFixed(2)}ms\n`;
-    }
-
-    if (perf.navigationTiming) {
-      const nav = perf.navigationTiming;
-      summary +=
-        `${DEBUG_PREFIX} ─────────────────────────────────────────\n` +
-        `${DEBUG_PREFIX} PAGE NAVIGATION TIMING:\n` +
-        `${DEBUG_PREFIX}   DNS Lookup:          ${nav.dns.toFixed(2)}ms\n` +
-        `${DEBUG_PREFIX}   TCP Connect:         ${nav.tcp.toFixed(2)}ms\n` +
-        `${DEBUG_PREFIX}   TTFB:                ${nav.ttfb.toFixed(2)}ms\n` +
-        `${DEBUG_PREFIX}   DOMContentLoaded:    ${nav.domContentLoaded.toFixed(2)}ms\n` +
-        `${DEBUG_PREFIX}   DOM Complete:        ${nav.domComplete.toFixed(2)}ms\n`;
-    }
-
-    if (perf.requests.length > 0) {
-      summary +=
-        `${DEBUG_PREFIX} ─────────────────────────────────────────\n` +
-        `${DEBUG_PREFIX} CROWAI REQUEST TIMING:\n`;
-      perf.requests.forEach((req) => {
-        const cacheStatus = req.cached ? " (from cache)" : "";
-        summary +=
-          `${DEBUG_PREFIX}   ${req.name}${cacheStatus}:\n` +
-          `${DEBUG_PREFIX}     Total Duration:    ${req.duration.toFixed(2)}ms\n` +
-          `${DEBUG_PREFIX}     DNS:               ${req.dns.toFixed(2)}ms\n` +
-          `${DEBUG_PREFIX}     TCP:               ${req.tcp.toFixed(2)}ms\n` +
-          `${DEBUG_PREFIX}     TTFB:              ${req.ttfb.toFixed(2)}ms\n` +
-          `${DEBUG_PREFIX}     Download:          ${req.download.toFixed(2)}ms\n` +
-          `${DEBUG_PREFIX}     Transfer Size:     ${req.transferSize} bytes\n`;
-      });
-    }
-
-    summary += `${DEBUG_PREFIX} ==========================================\n`;
-    console.log(summary);
-  };
-
-  const logWebVitalsSummary = () => {
-    const hasWebVitals =
-      perf.fp !== null ||
-      perf.fcp !== null ||
-      perf.lcp !== null ||
-      perf.cls !== null ||
-      perf.inp !== null;
-    if (!hasWebVitals) return;
-    let summary = `\n${DEBUG_PREFIX} ========== WEB VITALS SUMMARY ==========\n`;
-    if (perf.fp !== null) {
-      summary += `${DEBUG_PREFIX}   FP (First Paint):     ${perf.fp.toFixed(2)}ms\n`;
-    }
-    if (perf.fcp !== null) {
-      summary += `${DEBUG_PREFIX}   FCP (First Content):  ${perf.fcp.toFixed(2)}ms\n`;
-    }
-    if (perf.lcp !== null) {
-      summary +=
-        `${DEBUG_PREFIX}   LCP (Largest Content): ${perf.lcp.toFixed(2)}ms\n` +
-        `${DEBUG_PREFIX}   LCP Element:           ${perf.lcpElement}\n`;
-    }
-    if (perf.inp !== null) {
-      summary += `${DEBUG_PREFIX}   INP (Interaction):    ${perf.inp.toFixed(2)}ms\n`;
-    }
-    if (perf.cls !== null) {
-      summary += `${DEBUG_PREFIX}   CLS (Layout Shift):   ${perf.cls.toFixed(4)}\n`;
-    }
-    summary += `${DEBUG_PREFIX} ==========================================\n`;
-    console.log(summary);
-  };
-
-  setTimeout(logWebVitalsSummary, 3000);
-
-  log("Script loaded", { VERSION, TENANT_ID, LOADING_TIMEOUT });
   const COOKIE_UID = CROW_AI + "uid";
   const COOKIE_NV = CROW_AI + "nv";
   const COOKIE_PV = CROW_AI + "pv";
   const VARIANT_CACHE_KEY = CROW_AI + "vc";
-  const NO_MATCH_CACHE_KEY = CROW_AI + "nm";
   const PAGE_COUNT_KEY = CROW_AI + "pc";
   const SCRIPT = "script";
-  const URLS = "urls";
+  const AF_ID = CROW_AI + "af";
+  const VS_ID = CROW_AI + "vs";
   const ANTI_FLICKER_STYLE =
-    "body{opacity:0!important;visibility:hidden!important;transition:none!important}";
+    "html{opacity:0!important;visibility:hidden!important;transition:none!important}";
 
-  const currentUrl = window.location.href;
-  const baseUrl = window.location.origin + window.location.pathname;
-  const isDisabled = ~currentUrl.indexOf(CROW_AI + "_dis");
-  const urlParam = new URLSearchParams(window.location.search).get("crowai");
+  const loc = window.location;
+  const enc = encodeURIComponent;
+  const getById = (id) => document.getElementById(id);
+
+  let currentUrl = loc.href;
+  let baseUrl = loc.origin + loc.pathname;
+  const isDisabled = () => ~loc.href.indexOf(CROW_AI + "_dis");
+  const urlParam = new URLSearchParams(loc.search).get("crowai");
 
   let isLoaded = 0;
   let loadingTimer = null;
+  let isFirstFetch = true;
 
-  window[CROW_AI].T = TENANT_ID;
-  window[CROW_AI].V = VERSION;
+  ca.T = TENANT_ID;
+  ca.V = VERSION;
+  ca.AF = ANTI_FLICKER_STYLE;
 
   const getCookie = (name) => {
     try {
@@ -395,31 +79,40 @@
 
   const setCookie = (name, value, days) => {
     try {
-      if (days === 0) {
-        document.cookie = name + "=" + value + ";path=/;SameSite=Lax";
-      } else {
-        const expires = new Date(Date.now() + days * 864e5).toUTCString();
-        document.cookie = name + "=" + value + ";expires=" + expires + ";path=/;SameSite=Lax";
-      }
+      const expires = days ? ";expires=" + new Date(Date.now() + days * 864e5).toUTCString() : "";
+      document.cookie = name + "=" + value + expires + ";path=/;SameSite=Lax";
     } catch {}
   };
 
   const isPreviewUrl = urlParam && urlParam.startsWith("crowaipv_");
-  if (isPreviewUrl) {
-    try {
-      sessionStorage.setItem(COOKIE_PV, urlParam);
-    } catch {}
+  log("preview url check", "isPreviewUrl:", !!isPreviewUrl, "urlParam:", urlParam);
+  let previewData = "";
+  try {
+    if (isPreviewUrl) sessionStorage.setItem(COOKIE_PV, urlParam);
+    previewData = isPreviewUrl ? urlParam : sessionStorage.getItem(COOKIE_PV) || "";
+    log(
+      "preview data resolved",
+      "previewData:",
+      previewData ? previewData.slice(0, 40) + "..." : "(none)"
+    );
+  } catch (e) {
+    logErr("sessionStorage access failed", e);
   }
-  const previewData = isPreviewUrl
-    ? urlParam
-    : (function () {
-        try {
-          return sessionStorage.getItem(COOKIE_PV) || "";
-        } catch {
-          return "";
-        }
-      })();
   const isPreviewMode = !!previewData;
+  log(
+    "preview mode detection",
+    "isPreviewMode:",
+    isPreviewMode,
+    "previewData:",
+    previewData ? previewData.slice(0, 40) + "..." : "(none)"
+  );
+  log(
+    "isDisabled check",
+    "disabled:",
+    !!isDisabled(),
+    "href contains crowai_dis:",
+    ~loc.href.indexOf(CROW_AI + "_dis") ? true : false
+  );
 
   const getStorageItem = (key) => {
     try {
@@ -446,174 +139,169 @@
     }
   };
 
-  const trackError = (code) => window[CROW_AI]("event", "ce", { et: code });
+  const trackError = (code) => ca("event", "ce", { et: code });
   const createElement = (tag) => document.createElement(tag);
   const appendToHead = (el) => document.head?.appendChild(el);
 
   const finishLoading = (isError) => {
-    const caller = isError ? "TIMEOUT" : "VARIANT";
     if (isLoaded++) {
-      log(`finishLoading called by ${caller} but already loaded (race lost)`);
+      log("finishLoading skipped: already loaded");
       return;
     }
+    log(
+      "finishLoading called",
+      "isError:",
+      !!isError,
+      "total time from script start:",
+      _ms() + "ms"
+    );
     clearTimeout(loadingTimer);
-    const afEl = document.getElementById(CROW_AI + "af");
-    if (afEl) {
-      afEl.remove();
-      perf.antiFlickerRemoved = performance.now();
+    const af = getById(AF_ID);
+    if (af) {
+      log("clearing anti-flicker style content");
+      af.textContent = "";
     }
     if (isError) {
-      perf.timedOut = true;
-      logWarn("=== TIMEOUT WON THE RACE ===");
-      logWarn(
-        "Page was hidden for " +
-          LOADING_TIMEOUT / 1000 +
-          "s, showing now. Variant will apply later (may cause flicker)"
-      );
+      log("tracking timeout error (to)");
       trackError("to");
-    } else {
-      log("=== VARIANT WON THE RACE ===");
-      log("Variant applied before timeout. No flicker!");
     }
-    logPerfSummary();
-  };
-
-  const logLateVariantSummary = () => {
-    const domWaitActual =
-      perf.domReadyEnd && perf.domReadyStart
-        ? (perf.domReadyEnd - perf.domReadyStart).toFixed(2)
-        : "N/A";
-    const domReadyFromNav = perf.domReadyEnd ? perf.domReadyEnd.toFixed(2) : "N/A";
-    const domReadyFromScript = perf.domReadyEnd
-      ? (perf.domReadyEnd - perf.scriptStart).toFixed(2)
-      : "N/A";
-    const variantFromNav = perf.variantApplied ? perf.variantApplied.toFixed(2) : "N/A";
-    const variantFromScript = perf.variantApplied
-      ? (perf.variantApplied - perf.scriptStart).toFixed(2)
-      : "N/A";
-    const flickerDuration =
-      perf.variantApplied && perf.finishTime
-        ? (perf.variantApplied - perf.finishTime).toFixed(2)
-        : "N/A";
-
-    let summary =
-      `\n${DEBUG_PREFIX} ╔═══════════════════════════════════════════════════════════╗\n` +
-      `${DEBUG_PREFIX} ║           LATE VARIANT APPLICATION (FLICKER!)              ║\n` +
-      `${DEBUG_PREFIX} ╠═══════════════════════════════════════════════════════════╣\n` +
-      `${DEBUG_PREFIX} ║  WHAT HAPPENED                                            ║\n` +
-      `${DEBUG_PREFIX} ║  ─────────────────────────────────────────────────────    ║\n` +
-      `${DEBUG_PREFIX} ║  1. Timeout fired at ${LOADING_TIMEOUT}ms (page shown)${" ".repeat(Math.max(0, 18 - String(LOADING_TIMEOUT).length))}║\n` +
-      `${DEBUG_PREFIX} ║  2. DOM became ready later                                ║\n` +
-      `${DEBUG_PREFIX} ║  3. Variant applied AFTER page was visible = FLICKER     ║\n` +
-      `${DEBUG_PREFIX} ╠═══════════════════════════════════════════════════════════╣\n` +
-      `${DEBUG_PREFIX} ║  TIMING DETAILS                                           ║\n` +
-      `${DEBUG_PREFIX} ║  ─────────────────────────────────────────────────────    ║\n` +
-      `${DEBUG_PREFIX} ║  DOM Ready (from nav):      ${(domReadyFromNav + "ms").padEnd(28)}║\n` +
-      `${DEBUG_PREFIX} ║  DOM Ready (from script):   ${(domReadyFromScript + "ms").padEnd(28)}║\n` +
-      `${DEBUG_PREFIX} ║  DOM Wait Duration:         ${(domWaitActual + "ms").padEnd(28)}║\n` +
-      `${DEBUG_PREFIX} ║  Variant Applied (from nav):${(variantFromNav + "ms").padEnd(28)}║\n` +
-      `${DEBUG_PREFIX} ║  Variant Applied (script):  ${(variantFromScript + "ms").padEnd(28)}║\n` +
-      `${DEBUG_PREFIX} ║  ─────────────────────────────────────────────────────    ║\n` +
-      `${DEBUG_PREFIX} ║  Flicker Duration:          ${(flickerDuration + "ms (page visible before variant)").padEnd(28)}║\n` +
-      `${DEBUG_PREFIX} ╚═══════════════════════════════════════════════════════════╝\n`;
-    console.log(summary);
   };
 
   const applyVariant = (code) => {
-    log("applyVariant called - injecting immediately", {
-      codeLength: code?.length || 0,
-    });
-    if (code) {
-      log("Injecting variant code into head");
-      ((s) => ((s.textContent = code), appendToHead(s)))(createElement(SCRIPT));
-      perf.variantApplied = performance.now();
-      log("Variant code injected", {
-        time: perf.variantApplied.toFixed(2) + "ms",
-      });
-    } else {
-      log("No variant code to inject");
+    const codeLen = code ? code.length : 0;
+    log(
+      "applyVariant called",
+      "code bytes:",
+      codeLen,
+      "deferApply:",
+      !!window.CROWAI_DEFER_APPLY,
+      "ready:",
+      !!window._crowai_readyToApply
+    );
+    if (window.CROWAI_DEFER_APPLY && !window._crowai_readyToApply) {
+      log("applyVariant: CROWAI_DEFER_APPLY mode, stashing code for later");
+      window._crowai_pendingCode = code;
+      return;
     }
+    if (!code) {
+      log("applyVariant: no code to inject");
+      return finishLoading();
+    }
+    const old = getById(VS_ID);
+    if (old) {
+      log("removing previous variant script before re-injection");
+      old.remove();
+    }
+    log("injecting variant script into head");
+    const s = createElement(SCRIPT);
+    s.id = VS_ID;
+    s.textContent = code;
+    appendToHead(s);
     finishLoading();
   };
 
+  window[CROW_AI + "_applied"] = () => {
+    log("crowai_applied called", "has pending code:", !!window._crowai_pendingCode);
+    window._crowai_readyToApply = true;
+    const pending = window._crowai_pendingCode;
+    if (pending) {
+      window._crowai_pendingCode = null;
+      applyVariant(pending);
+    }
+  };
+
   const handleVariantAssignment = () => {
-    log("handleVariantAssignment started");
-    const startTime = performance.now();
+    log("handleVariantAssignment: start");
+    const vc = getCache(VARIANT_CACHE_KEY) || {};
+    const cachedAssignments = vc.assignments || {};
+    const cacheAge = vc.ts ? Date.now() - vc.ts : null;
+    log(
+      "variant cache read",
+      "hit:",
+      !!vc.ts,
+      "assignments count:",
+      Object.keys(cachedAssignments).length,
+      "age ms:",
+      cacheAge
+    );
 
-    const lastActivity = parseInt(getCookie(CROW_AI + "act") || "0");
-    let cachedAssignments = null;
-    log("Session check", {
-      lastActivity,
-      isSessionValid: lastActivity && Date.now() - lastActivity < 18e5,
-      isPreviewMode,
-    });
-
-    if (lastActivity && Date.now() - lastActivity < 18e5) {
-      const nmCache = getCache(NO_MATCH_CACHE_KEY);
-      if (nmCache?.[URLS]?.includes(currentUrl) || nmCache?.[URLS]?.includes(baseUrl)) {
-        perf.cacheHit = true;
-        perf.cacheType = "no-match";
-        if (CACHE_FOR_SESSION) {
-          log("Cache hit: no-match cache, skipping fetch");
-          return finishLoading();
-        }
-        log("Cache hit: no-match cache, but re-validating (CACHE_FOR_SESSION=false)");
-      }
-
-      const variantCache = getCache(VARIANT_CACHE_KEY) || {};
-      const baseUrlCache = variantCache[baseUrl];
-      const cached = variantCache[currentUrl] || (baseUrlCache?.iq ? baseUrlCache : null);
-      if (cached && cached.t && Object.keys(cached.t).length > 0) {
-        perf.cacheHit = true;
-        perf.cacheType = "variant" + (cached.iq ? " (ignore-query)" : "");
-        cachedAssignments = cached.t;
-        log("Cache hit: variant cache", {
-          assignments: cached.t,
-          ignoreQuery: cached.iq,
-        });
-        if (cached.r) {
-          log("Cached split URL redirect", { url: cached.r });
+    if (CACHE_FOR_SESSION && vc.urls) {
+      const urlEntry = vc.urls[currentUrl] || vc.urls[baseUrl];
+      log(
+        "CACHE_FOR_SESSION: checking url cache",
+        "urls count:",
+        Object.keys(vc.urls).length,
+        "entry found:",
+        !!urlEntry
+      );
+      if (urlEntry && urlEntry.c && Date.now() - (urlEntry.ts || 0) < CODE_CACHE_TTL) {
+        log(
+          "CACHE_FOR_SESSION: cache HIT, applying cached variant",
+          "code bytes:",
+          urlEntry.c.length,
+          "age ms:",
+          Date.now() - (urlEntry.ts || 0)
+        );
+        if (urlEntry.r) {
           try {
-            window.location.replace(cached.r);
+            window.location.replace(urlEntry.r);
           } catch {
-            window.location.href = cached.r;
+            window.location.href = urlEntry.r;
           }
           return;
         }
-        if (CACHE_FOR_SESSION) {
-          return applyVariant(cached.c);
-        }
-        log("Re-validating cached assignments (CACHE_FOR_SESSION=false)");
-      } else {
-        log("Cache miss: no cached variant for URL");
+        return applyVariant(urlEntry.c);
       }
     }
 
-    log("Starting script tag fetch");
-    perf.fetchStart = performance.now();
+    const fetchStart = performance.now();
+    log("setting up crowai_r callback, awaiting worker response");
 
     window[CROW_AI + "_r"] = (d) => {
+      const fetchDuration = (performance.now() - fetchStart).toFixed(1);
+      log(
+        "crowai_r callback received",
+        "fetch duration:",
+        fetchDuration + "ms",
+        "has tests:",
+        d && d.t ? Object.keys(d.t).length : 0,
+        "has code length:",
+        d && d.c ? d.c.length : 0,
+        "has error:",
+        !!(d && d.e),
+        "response url:",
+        d && d.url ? d.url : "(none)"
+      );
       try {
-        perf.fetchEnd = performance.now();
-        const fetchDuration = (perf.fetchEnd - perf.fetchStart).toFixed(2);
-        log("Script tag callback received", {
-          fetchDuration: fetchDuration + "ms",
-          hasAssignments: d.t && Object.keys(d.t).length > 0,
-          hasCode: !!d.c,
-          ignoreQuery: d.iq,
-          isError: !!d.e,
-        });
-
+        if (d.url && d.url !== loc.href) {
+          log(
+            "url match guard: STALE — response url does not match current",
+            "response:",
+            d.url,
+            "current:",
+            loc.href
+          );
+          return;
+        }
+        log("url match guard: matches (or no url provided)");
         if (d.e) {
-          logError("Worker returned error response");
+          log("worker error response detected, errCode:", d.e);
           trackError("we");
           return finishLoading();
         }
 
         if (d.u && !getCookie(COOKIE_UID)) {
-        log("Setting user ID cookie and new visitor flag");
+          log("setting UID cookie from worker response", "uid:", d.u);
           setCookie(COOKIE_UID, d.u, 100);
           setCookie(COOKIE_NV, "1", 0);
+        } else {
+          log(
+            "uid already present or not provided",
+            "has-existing:",
+            !!getCookie(COOKIE_UID),
+            "provided:",
+            !!d.u
+          );
         }
 
         if (d.r) {
@@ -625,53 +313,63 @@
           }
           return;
         }
-        
+
         if (!d.t || Object.keys(d.t).length === 0) {
-          log("No assignments returned, caching as no-match", { ignoreQuery: d.iq });
-          if (!isPreviewMode) {
-            let cache = getCache(NO_MATCH_CACHE_KEY) || { [URLS]: [] };
-            const cacheUrl = d.iq ? baseUrl : currentUrl;
-            cache[URLS].includes(cacheUrl) || cache[URLS].push(cacheUrl);
-            setStorageItem(NO_MATCH_CACHE_KEY, cache);
-          }
+          log("no tests matched for url");
           return finishLoading();
         }
 
         if (!isPreviewMode) {
-          log("Caching variant for URL", { ignoreQuery: d.iq, assignments: d.t });
+          const now = Date.now();
           const cache = getCache(VARIANT_CACHE_KEY) || {};
-          cache[d.iq ? baseUrl : currentUrl] = {
-            t: d.t,
-            c: d.c,
-            iq: d.iq ? 1 : 0,
-            r: d.r || "",
-          };
+          cache.assignments = { ...cache.assignments, ...d.t };
+          cache.ts = now;
+          log(
+            "variant cache write",
+            "assignments count:",
+            Object.keys(d.t).length,
+            "CACHE_FOR_SESSION:",
+            CACHE_FOR_SESSION
+          );
+          if (CACHE_FOR_SESSION) {
+            const urls = cache.urls || {};
+            urls[d.iq ? baseUrl : currentUrl] = { c: d.c, ts: now };
+            Object.keys(urls).forEach((u) => {
+              if (now - (urls[u].ts || 0) > CODE_CACHE_TTL) delete urls[u];
+            });
+            const keys = Object.keys(urls).sort((a, b) => (urls[b].ts || 0) - (urls[a].ts || 0));
+            const kept = {};
+            keys.slice(0, MAX_CACHED_URLS).forEach((k) => (kept[k] = urls[k]));
+            cache.urls = kept;
+            log("CACHE_FOR_SESSION: urls map updated", "urls count:", Object.keys(kept).length);
+          }
           setStorageItem(VARIANT_CACHE_KEY, cache);
+        } else {
+          log("preview mode: skipping variant cache write");
         }
 
         if (isLoaded) {
-          logLateVariantSummary();
+          log("finishLoading already fired, skipping applyVariant");
           return;
         }
-
-        const totalDuration = (performance.now() - startTime).toFixed(2);
-        log("Applying variant", { totalDuration: totalDuration + "ms" });
+        log("applying variant code", "bytes:", d.c ? d.c.length : 0);
         applyVariant(d.c);
-      } catch (error) {
-        logError("crowai_r callback error", error);
+      } catch (err) {
+        logErr("error in crowai_r callback", err);
         finishLoading();
       }
     };
 
-    let caParam = "";
-    if (cachedAssignments) {
-      caParam = Object.entries(cachedAssignments)
-        .map(function (e) {
-          return encodeURIComponent(e[0]) + ":" + encodeURIComponent(e[1]);
-        })
-        .join(",");
-      log("Sending cached assignments for re-validation", { ca: caParam });
-    }
+    const caParam = Object.entries(cachedAssignments)
+      .map((e) => enc(e[0]) + ":" + enc(e[1]))
+      .join(",");
+    log(
+      "ca= param built",
+      "testIds count:",
+      Object.keys(cachedAssignments).length,
+      "caParam length:",
+      caParam.length
+    );
 
     const s = createElement(SCRIPT);
     s.async = 1;
@@ -682,83 +380,273 @@
       CROW_AI +
       "=" +
       (isPreviewMode
-        ? previewData + "_" + encodeURIComponent(currentUrl)
+        ? previewData + "_" + enc(currentUrl)
         : TENANT_ID +
           "_" +
-          (window[PAGE_COUNT_KEY] || 1) +
+          window[PAGE_COUNT_KEY] +
           "_" +
           (getCookie(COOKIE_UID) || "") +
           "_" +
           (getCookie(COOKIE_NV) ? "1" : "0") +
           "_" +
-          encodeURIComponent(currentUrl)) +
+          enc(currentUrl)) +
       "&V=" +
       VERSION +
       "&sc=" +
-      encodeURIComponent(document.cookie);
-    log("Script tag injection", { src: s.src.split("?")[0] });
-    s.onerror = () => {
-      logError("Script tag network error");
+      enc(document.cookie);
+    s.onerror = ((failedUrl) => (err) => {
+      logErr("variant script fetch error (vne)", err);
       trackError("vne");
+      if (failedUrl !== currentUrl) return;
       finishLoading();
-    };
+    })(currentUrl);
+    log(
+      "CDN URL constructed",
+      "length:",
+      s.src.length,
+      "query string starts:",
+      s.src.indexOf("?") > -1
+        ? s.src.slice(s.src.indexOf("?"), s.src.indexOf("?") + 80)
+        : "(none)"
+    );
     appendToHead(s);
+    log("variant script tag appended to head, fetch started");
   };
 
-  const initialize = () => {
-    perf.initializeStart = performance.now();
-
-    if (isDisabled) {
-      log("Script disabled via URL param");
+  let fetchVariantCallCount = 0;
+  const fetchVariant = () => {
+    fetchVariantCallCount++;
+    const prevUrl = currentUrl;
+    if (fetchVariantCallCount > 1) {
+      log(
+        "SPA navigation detected: crowai_fetch called again",
+        "callCount:",
+        fetchVariantCallCount,
+        "old url:",
+        prevUrl,
+        "new url:",
+        loc.href
+      );
+    } else {
+      log("fetchVariant: initial call");
+    }
+    if (isDisabled()) {
+      log("fetchVariant: disabled, skipping");
       return;
     }
+    currentUrl = loc.href;
+    baseUrl = loc.origin + loc.pathname;
+    isLoaded = 0;
+    clearTimeout(loadingTimer);
 
-    let pc = parseInt(getCookie(PAGE_COUNT_KEY) || "0") + 1;
+    const uidCookie = getCookie(COOKIE_UID);
+    const nvCookie = getCookie(COOKIE_NV);
+    const pcCookie = getCookie(PAGE_COUNT_KEY);
+    log(
+      "cookies read",
+      "UID:",
+      uidCookie || "(none)",
+      "NV:",
+      nvCookie || "(none)",
+      "PC:",
+      pcCookie || "(none)"
+    );
+
+    let pc = parseInt(pcCookie || "0") + 1;
     setCookie(PAGE_COUNT_KEY, pc.toString(), 100);
     window[PAGE_COUNT_KEY] = pc;
-    log("Page count", { pc });
+    log("page count incremented", "new pc:", pc);
+
+    const skipAf = !isFirstFetch && ca.SUBSEQUENT_AF !== true;
+    isFirstFetch = false;
+
+    if (skipAf) {
+      log("anti-flicker skipped for SPA nav (SUBSEQUENT_AF not true)");
+    } else {
+      const existingAf = getById(AF_ID);
+      if (!existingAf) {
+        const afNode = createElement("style");
+        afNode.id = AF_ID;
+        afNode.textContent = ANTI_FLICKER_STYLE;
+        appendToHead(afNode);
+        const afGuard = () => {
+          if (isLoaded) return;
+          if (!getById(AF_ID)) {
+            appendToHead(afNode);
+            log("anti-flicker re-attached — was wiped by hydration");
+          }
+          requestAnimationFrame(afGuard);
+        };
+        requestAnimationFrame(afGuard);
+        log("anti-flicker style injected");
+      } else {
+        existingAf.textContent = ANTI_FLICKER_STYLE;
+        log("anti-flicker re-activated for SPA nav");
+      }
+    }
 
     const timeoutMs = isPreviewMode ? 10000 : LOADING_TIMEOUT;
-    log("Setting loading timeout", { timeout: timeoutMs, isPreviewMode });
+    log("loading timer armed", "timeoutMs:", timeoutMs, "isPreviewMode:", isPreviewMode);
     loadingTimer = setTimeout(() => {
       if (!isLoaded) {
-        logWarn(`Timeout fired after ${timeoutMs}ms - variant not ready yet`);
+        log("loading timeout fired — no response received in time");
         finishLoading(1);
-      } else {
-        log("Timeout fired but variant already applied - no action needed");
       }
     }, timeoutMs);
-
-    log("Loading event script");
-    const script = createElement(SCRIPT);
-    script.async = 1;
-    script.src = CDN_BASE + "/js/event?V=" + VERSION;
-    const eventScriptStart = performance.now();
-    script.onload = () => {
-      perf.eventScriptLoad = performance.now() - eventScriptStart;
-      log("Event script loaded", {
-        duration: perf.eventScriptLoad.toFixed(2) + "ms",
-      });
-    };
-    script.onerror = () => {
-      logError("Event script failed to load");
-      trackError("ene");
-    };
-    appendToHead(script);
 
     handleVariantAssignment();
   };
 
-  if (isDisabled) {
-    log("Script disabled, skipping anti-flicker");
-  } else {
-    log("Applying anti-flicker style");
-    ((s) => ((s.id = CROW_AI + "af"), (s.textContent = ANTI_FLICKER_STYLE), appendToHead(s)))(
-      createElement("style")
-    );
-    perf.antiFlickerApplied = performance.now();
-  }
+  window[CROW_AI + "_fetch"] = fetchVariant;
 
-  log("Calling initialize immediately (not waiting for DOMContentLoaded)");
+  const initialize = () => {
+    log("initialize: start");
+
+    const getVariantCleanups = () =>
+      (window._crowaiVariantCleanups = window._crowaiVariantCleanups || []);
+
+    const poll = (cb, delay) => {
+      log("utils.poll invoked", "delay:", delay);
+      const id = setInterval(cb, delay);
+      const cancel = () => clearInterval(id);
+      getVariantCleanups().push(cancel);
+      return cancel;
+    };
+
+    const waitUntil = (fn) =>
+      new Promise((resolve) => {
+        let cancel;
+        const check = () => {
+          try {
+            const result = fn();
+            if (result) {
+              cancel?.();
+              resolve(result);
+            }
+          } catch {}
+        };
+        if (
+          !(() => {
+            try {
+              return fn();
+            } catch {
+              return null;
+            }
+          })()
+        ) {
+          cancel = poll(check, 50);
+        } else {
+          resolve(fn());
+        }
+      });
+
+    const waitForElement = (selector) => {
+      log("utils.waitForElement invoked", "selector:", selector);
+      return waitUntil(() => document.querySelector(selector));
+    };
+
+    const observeSelector = (selector, callback, options) => {
+      log("utils.observeSelector invoked", "selector:", selector, "options:", options);
+      const opts = options || {};
+      let disconnected = false;
+      let timeoutId;
+      const tryCallback = (el) => {
+        try {
+          callback(el);
+        } catch {}
+      };
+      const disconnect = () => {
+        if (disconnected) return;
+        disconnected = true;
+        observer.disconnect();
+        clearTimeout(timeoutId);
+      };
+      const observer = new MutationObserver(() => {
+        document.querySelectorAll(selector).forEach((el) => {
+          if (disconnected) return;
+          tryCallback(el);
+          if (opts.once) disconnect();
+        });
+      });
+      observer.observe(document.body || document.documentElement, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ["class"],
+      });
+      document.querySelectorAll(selector).forEach((el) => {
+        if (disconnected) return;
+        tryCallback(el);
+        if (opts.once) disconnect();
+      });
+      if (opts.timeout != null) {
+        timeoutId = setTimeout(() => {
+          if (!disconnected) {
+            disconnect();
+            if (opts.onTimeout)
+              try {
+                opts.onTimeout();
+              } catch {}
+          }
+        }, opts.timeout);
+      }
+      getVariantCleanups().push(disconnect);
+      return disconnect;
+    };
+
+    const getState = () => {
+      const vc = getCache(VARIANT_CACHE_KEY) || {};
+      return { assignments: vc.assignments || {} };
+    };
+    const getVisitor = () => ({
+      userId: getCookie(COOKIE_UID) || "",
+    });
+
+    const onCleanup = (fn) => {
+      getVariantCleanups().push(fn);
+      log("onCleanup registered", "total variant cleanups:", getVariantCleanups().length);
+    };
+
+    ca.utils = {
+      poll,
+      waitUntil,
+      waitForElement,
+      observeSelector,
+      onCleanup,
+      getState,
+      getVisitor,
+      getCookie,
+      setCookie,
+      getStorageItem,
+      setStorageItem,
+    };
+
+    if (isDisabled()) {
+      log("initialize: disabled, skipping fetch/library");
+      return;
+    }
+
+    const script = createElement(SCRIPT);
+    script.async = 1;
+    script.src = CDN_BASE + "/js/library?V=" + VERSION;
+    const eventScriptStart = performance.now();
+    script.onload = () => {
+      log(
+        "event script loaded",
+        "duration:",
+        (performance.now() - eventScriptStart).toFixed(1) + "ms"
+      );
+    };
+    script.onerror = (err) => {
+      logErr("event script fetch error", err);
+    };
+    log("appending event script to head", "src:", script.src);
+    appendToHead(script);
+
+    log("calling fetchVariant for initial page");
+    fetchVariant();
+    log("initialize: complete");
+  };
+
   initialize();
 })(window, document);
