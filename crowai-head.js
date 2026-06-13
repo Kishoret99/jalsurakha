@@ -39,7 +39,7 @@
   const CACHE_FOR_SESSION = true;
   const CODE_CACHE_TTL = 15000;
   const MAX_CACHED_URLS = 50;
-  const CDN_BASE = "https://127.0.0.1:8787";
+  const CDN_BASE = "https://preview-api.crowai.co";
   const COOKIE_UID = CROW_AI + "uid";
   const COOKIE_NV = CROW_AI + "nv";
   const COOKIE_PV = CROW_AI + "pv";
